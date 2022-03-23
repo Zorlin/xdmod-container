@@ -20,7 +20,7 @@
 FROM    centos:7
 LABEL   version="10.0.0" \
         description="XDMoD bundle containing database and web server" \
-        maintainer="frey@udel.edu"
+        maintainer="zorlin@gmail.com"
 
 #
 # Install tools, libraries:

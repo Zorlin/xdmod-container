@@ -36,7 +36,7 @@ fi
 sudo --user mysql --group mysql /usr/bin/mysqld_safe --basedir=/usr &
 
 if [ -z "$EMAIL" ]; then
-    echo "Email not set. This will cause issues...
+    echo "Email not set. This will cause issues..."
 fi
 
 # Automatically initialise XDMoD

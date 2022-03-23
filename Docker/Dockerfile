@@ -4,7 +4,7 @@
 #
 # Build
 #
-#   $ docker build --rm --tag local/xdmod:9.5.0 .
+#   $ docker build --rm --tag local/xdmod:10.0.0 .
 #
 # Run
 #
@@ -13,12 +13,12 @@
 #     --volume "$(pwd)/database:/var/lib/mysql:rw" \
 #     --env CLUSTER_NAME="<cluster_name_for_xdmod-shredder>" \
 #     --env RESOURCE_LOG_FORMAT="<resource_log_format_for_xdmod-shredder" \
-#     --publish 8080:8080 \
-#     local/xdmod:9.5.0
+#     --publish 80:80 \
+#     local/xdmod:10.0.0
 #
 
 FROM    centos:7
-LABEL   version="9.5.0" \
+LABEL   version="10.0.0" \
         description="XDMoD bundle containing database and web server" \
         maintainer="frey@udel.edu"
 
@@ -47,12 +47,12 @@ RUN     yum -y install  mariadb-server mariadb
 #
 # Install XDMoD:
 #
-RUN     yum -y install https://github.com/ubccr/xdmod/releases/download/v9.5.0/xdmod-9.5.0-1.0.el7.noarch.rpm
+RUN     yum -y install https://github.com/ubccr/xdmod/releases/download/v10.0.0/xdmod-10.0.0-1.0.el7.noarch.rpm
 
 #
-# XDMoD uses an Apache virtual host on port 8080:
+# XDMoD uses an Apache virtual host on port 80:
 #
-EXPOSE  8080/tcp
+EXPOSE  80/tcp
 
 #
 # Ensure a mountpoint/directory exists for the data ingest pipeline:
@@ -65,5 +65,6 @@ RUN     mkdir --parents --mode=0755 /var/lib/XDMoD-ingest-queue/error
 # Command to execute when container is started:
 #
 COPY    --chown=0:0 XDMoD-start /usr/sbin/XDMoD-start
+COPY	--chown=0:0 xdmod.conf /etc/httpd/conf.d/xdmod.conf
 RUN     chmod 0755 /usr/sbin/XDMoD-start
 CMD     /usr/sbin/XDMoD-start

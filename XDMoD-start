@@ -35,6 +35,15 @@ if [ ! -e /var/lib/mysql/mysql/user.frm ]; then
 fi
 sudo --user mysql --group mysql /usr/bin/mysqld_safe --basedir=/usr &
 
+if [ -z "$EMAIL" ]; then
+    echo "Email not set. This will cause issues...
+fi
+
+# Automatically initialise XDMoD
+if [ ! -d /var/lib/mysql/moddb/ ]; then
+    /usr/bin/run_xdmod_setup $EMAIL
+fi
+
 # Ensure the ingest queue directories are okay:
 for subdir in in out error; do
     if [ ! -e /var/lib/XDMoD-ingest-queue/${subdir} ]; then

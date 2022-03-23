@@ -1,0 +1,41 @@
+#!/usr/bin/expect -f
+
+# Set email from arguments
+set EMAIL [lindex $argv 0]
+
+# Open the xdmod-setup program
+spawn /usr/bin/xdmod-setup
+
+expect "Select an option (1, 2, 3, 4, 5, 6, 7, 8, q): "
+
+# Set general settings
+send -- "1\r"
+
+expect "Site Address: [https://localhost/] "
+send "http://localhost\r"
+send "$EMAIL\r"
+send -- "\r"
+send -- "\r"
+send -- "on\r"
+send -- "\r"
+send -- "\r"
+
+# Set database settings
+expect "Select an option (1, 2, 3, 4, 5, 6, 7, 8, q): "
+
+send -- "2\r"
+send -- "\r"
+send -- "\r"
+send -- "\r"
+send -- "\r"
+send -- "\r"
+
+send -- "\r"
+send -- "\r"
+send -- "\r"
+
+send -- "\r"
+
+expect "Select an option (1, 2, 3, 4, 5, 6, 7, 8, q): "
+
+send -- "q\r"

@@ -29,7 +29,7 @@ RUN     yum -y update && \
         yum -y install  epel-release && \
         yum -y install  sudo wget gmp-devel cronie logrotate \
                         coreutils shadow-utils tar xz bzip2 gzip zip jq \
-                        libreoffice chromium-headless librsvg2-tools
+                        libreoffice chromium-headless librsvg2-tools expect
 RUN     set -o pipefail && echo "root:${ROOT_PASSWORD}" | chpasswd
 
 #
@@ -66,5 +66,7 @@ RUN     mkdir --parents --mode=0755 /var/lib/XDMoD-ingest-queue/error
 #
 COPY    --chown=0:0 XDMoD-start /usr/sbin/XDMoD-start
 COPY	--chown=0:0 xdmod.conf /etc/httpd/conf.d/xdmod.conf
+COPY	--chown=0:0 run_xdmod_setup /usr/bin/run_xdmod_setup
 RUN     chmod 0755 /usr/sbin/XDMoD-start
+RUN     chmod 0755 /usr/bin/run_xdmod_setup
 CMD     /usr/sbin/XDMoD-start

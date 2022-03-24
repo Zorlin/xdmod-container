@@ -41,6 +41,8 @@ RUN	yum -y install epel-release && yum -y install munge && \
 RUN	rm slurm-20.11.8-1.el7.x86_64.rpm
 RUN	chown -R root:root /run/munge /var/log/munge /var/lib/munge /etc/munge
 COPY	run-munge.sh /usr/bin/run-munge
-RUN	chmod 755 /usr/bin/run-munge
+COPY	slurm-main.sh /usr/bin/slurm-main.sh
+COPY	slurm-collect.sh /usr/bin/slurm-collect.sh
+RUN	chmod 755 /usr/bin/run-munge /usr/bin/slurm-main.sh /usr/bin/slurm-collect.sh
 
 CMD	["sleep", "infinity"]

@@ -21,9 +21,9 @@ get_single_resource_data (){
 	fi
 sacct --clusters ${CLUSTER} -r ${PARTITIONS} ${EXTRAOPT1} --allusers \
 --parsable2 --noheader --allocations --duplicates \
---format jobid,jobidraw,cluster,partition,account,group,gid,\
-user,uid,submit,eligible,start,end,elapsed,exitcode,state,nnodes,\
-ncpus,reqcpus,reqmem,reqgres,reqtres,timelimit,nodelist,jobname \
+--format jobid,jobidraw,cluster,partition,qos,account,group,gid,user,uid,\
+submit,eligible,start,end,elapsed,exitcode,state,nnodes,ncpus,reqcpus,reqmem,\
+reqtres,alloctres,timelimit,nodelist,jobname \
 --state CANCELLED,COMPLETED,FAILED,NODE_FAIL,PREEMPTED,TIMEOUT \
 --starttime ${STIME} --endtime ${ETIME} > /xdmod-ingest/xdmod-${RESOURCE}-${STIME}-${ETIME}.log
 sed -i -e 's/'"$CLUSTER"'/'"$RESOURCE"'/g' /xdmod-ingest/xdmod-${RESOURCE}-${STIME}-${ETIME}.log

@@ -37,7 +37,7 @@ RUN     set -o pipefail && echo "root:${ROOT_PASSWORD}" | chpasswd
 #
 RUN     yum -y install  httpd php php-cli php-gd php-gmp \
                         php-pdo php-xml php-pear-MDB2 php-pear-MDB2-Driver-mysql \
-                        php-mbstring php-pecl-apcu perl-Image-ExifTool
+                        php-mbstring php-ldap php-pecl-apcu perl-Image-ExifTool
 
 #
 # Install MySQL:

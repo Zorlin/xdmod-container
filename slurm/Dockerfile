@@ -38,4 +38,9 @@ WORKDIR /root/
 COPY --from=builder /root/rpmbuild/RPMS/x86_64/slurm-20.11.8-1.el7.x86_64.rpm ./
 RUN	yum -y install epel-release && yum -y install munge && \
         yum -y install slurm-20.11.8-1.el7.x86_64.rpm
-RUN	rm -r /root/rpmbuild/
+RUN	rm slurm-20.11.8-1.el7.x86_64.rpm
+RUN	chown -R root:root /run/munge /var/log/munge /var/lib/munge /etc/munge
+COPY	run-munge.sh /usr/bin/run-munge
+RUN	chmod 755 /usr/bin/run-munge
+
+CMD	["sleep", "infinity"]

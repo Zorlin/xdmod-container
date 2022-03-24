@@ -24,7 +24,7 @@ fi
 echo "`date` cutoff dates:" $STIME $ETIME
 
 # collect data from different clusters
-./slurm-collect.sh ${STIME} ${ETIME}
+/usr/bin/slurm-collect.sh ${STIME} ${ETIME}
 if [ $? -ne 0 ]; then
    echo "`date` SLURM collector failed"
    exit 1

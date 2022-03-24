@@ -66,7 +66,9 @@ RUN     mkdir --parents --mode=0755 /var/lib/XDMoD-ingest-queue/error
 #
 COPY    --chown=0:0 XDMoD-start /usr/sbin/XDMoD-start
 COPY	--chown=0:0 xdmod.conf /etc/httpd/conf.d/xdmod.conf
-COPY	--chown=0:0 run_xdmod_setup /usr/bin/run_xdmod_setup
+COPY	--chown=0:0 run-xdmod-setup /usr/bin/run-xdmod-setup
+COPY	--chown=0:0 slurm-ingest.sh /usr/bin/slurm-ingest.sh
 RUN     chmod 0755 /usr/sbin/XDMoD-start
-RUN     chmod 0755 /usr/bin/run_xdmod_setup
+RUN     chmod 0755 /usr/bin/run-xdmod-setup
+RUN     chmod 0755 /usr/bin/slurm-ingest.sh
 CMD     /usr/sbin/XDMoD-start

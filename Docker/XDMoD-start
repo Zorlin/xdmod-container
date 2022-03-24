@@ -41,7 +41,7 @@ fi
 
 # Automatically initialise XDMoD
 if [ ! -d /var/lib/mysql/moddb/ ]; then
-    /usr/bin/run_xdmod_setup $EMAIL
+    /usr/bin/run-xdmod-setup $EMAIL
 fi
 
 # Ensure the ingest queue directories are okay:

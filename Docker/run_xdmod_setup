@@ -3,7 +3,7 @@
 # Set email from arguments
 set EMAIL [lindex $argv 0]
 # Debug mode
-exp_internal 1
+#exp_internal 1
 # Set timeout
 set timeout 120
 

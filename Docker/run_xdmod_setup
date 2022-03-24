@@ -2,6 +2,10 @@
 
 # Set email from arguments
 set EMAIL [lindex $argv 0]
+# Debug mode
+exp_internal 1
+# Set timeout
+set timeout 120
 
 # Open the xdmod-setup program
 spawn /usr/bin/xdmod-setup
@@ -11,31 +15,60 @@ expect "Select an option (1, 2, 3, 4, 5, 6, 7, 8, q): "
 # Set general settings
 send -- "1\r"
 
-expect "Site Address: [https://localhost/] "
+expect "*Site Address: \\\[https://localhost/\\\]"
 send "http://localhost\r"
+
+expect "*Email Address: "
 send "$EMAIL\r"
+
+expect "*Chromium Path: \\\[/usr/lib64/chromium-browser/headless_shell\\\] "
 send -- "\r"
+
+expect "*Center Logo Path: "
 send -- "\r"
+
+expect "*Enable Dashboard Tab (on, off)? \\\[off\\\] "
 send -- "on\r"
+
+expect "*Overwrite config file '/etc/xdmod/portal_settings.ini' (yes, no)? \\\[yes\\\] "
 send -- "\r"
+
+expect "*Press ENTER to continue."
 send -- "\r"
 
 # Set database settings
 expect "Select an option (1, 2, 3, 4, 5, 6, 7, 8, q): "
-
 send -- "2\r"
-send -- "\r"
-send -- "\r"
-send -- "\r"
-send -- "\r"
+
+expect "*DB Hostname or IP: \\\[localhost\\\] "
 send -- "\r"
 
-send -- "\r"
-send -- "\r"
+expect "DB Port: \\\[3306\\\] "
 send -- "\r"
 
+expect "DB Username: \\\[xdmod\\\] "
+send -- "\r"
+
+expect "DB Password: "
+send -- "\r"
+
+expect "(confirm) DB Password: "
+send -- "\r"
+
+expect "DB Admin Username: \\\[root\\\] "
+send -- "\r"
+
+expect "DB Admin Password: "
+send -- "\r"
+
+expect "(confirm) DB Admin Password: "
+send -- "\r"
+
+expect "*Overwrite config file '/etc/xdmod/portal_settings.ini' (yes, no)? \\\[yes\\\] "
+send -- "\r"
+
+expect "Press ENTER to continue."
 send -- "\r"
 
 expect "Select an option (1, 2, 3, 4, 5, 6, 7, 8, q): "
-
 send -- "q\r"

@@ -29,7 +29,7 @@ reqtres,alloctres,timelimit,nodelist,jobname \
 sed -i -e 's/'"$CLUSTER"'/'"$RESOURCE"'/g' /xdmod-ingest/xdmod-${RESOURCE}-${STIME}-${ETIME}.log
 if [ ! -z $NMT ]
 then
-  awk -v nmt="$NMT" 'BEGIN {FS="|";OFS="|"} {$18=$18/nmt} {print}' /xdmod-ingest/xdmod-${RESOURCE}-${STIME}-${ETIME}.log > tmpfile
+  awk -v nmt="$NMT" 'BEGIN {FS="|";OFS="|"} {$19=$19/nmt} {print}' /xdmod-ingest/xdmod-${RESOURCE}-${STIME}-${ETIME}.log > tmpfile
   mv tmpfile /xdmod-ingest/xdmod-${RESOURCE}-${STIME}-${ETIME}.log
 fi
 }

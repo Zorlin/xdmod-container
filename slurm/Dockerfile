@@ -1,13 +1,14 @@
-FROM    centos:7
+# Build stage
+FROM    centos:7 AS builder
 LABEL   version="10.0.0" \
         description="Slurm collector for XDMoD" \
         maintainer="zorlin@gmail.com"
 
-#
-# Install tools, libraries:
-#
+# Install dependencies and tools needed to build Slurm
 RUN     yum -y update && \
-        yum -y install	gcc python3-devel && \
+        yum -y install	gcc python3-devel rpm-build && \
+        yum -y install	perl-ExtUtils-MakeMaker perl-DBI perl-Switch && \
+        yum -y install	mariadb-devel && \
         yum -y install  epel-release wget nano && \
         yum -y install  munge munge-libs munge-devel && \
         yum -y install  sudo openssl openssl-devel pam-devel \
@@ -17,24 +18,24 @@ RUN     yum -y update && \
 RUN     set -o pipefail && echo "root:${ROOT_PASSWORD}" | chpasswd
 
 #
-# Fetch and extract Slurm
+# Fetch Slurm
 #
-RUN	wget https://github.com/SchedMD/slurm/archive/refs/tags/slurm-20-11-8-1.tar.gz
-RUN	tar xvf slurm-20-11-8-1.tar.gz 
+RUN	wget https://download.schedmd.com/slurm/slurm-20.11.8.tar.bz2
 
 #
 # Build Slurm
 #
-WORKDIR	"/slurm-slurm-20-11-8-1"
-RUN	./configure
-RUN	make install
+RUN	rpmbuild -ta slurm-20.11.8.tar.bz2
 
 # 
 # Clean up
 #
-RUN	"rm -r /slurm-slurm-20-11-8-1"
+RUN	rm -r /slurm-20.11.8.tar.bz2
 
-#
-# Command to execute when container is started:
-#
-CMD     /bin/bash
+# Main stage
+FROM	centos:7
+WORKDIR /root/
+COPY --from=builder /root/rpmbuild/RPMS/x86_64/slurm-20.11.8-1.el7.x86_64.rpm ./
+RUN	yum -y install epel-release && yum -y install munge && \
+        yum -y install slurm-20.11.8-1.el7.x86_64.rpm
+RUN	rm -r /root/rpmbuild/

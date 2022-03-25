@@ -2,12 +2,12 @@
 export STIME=$1
 export ETIME=$2
 
-# get_single_cluster_data function, arguments:
+# get_data function, arguments:
 # CLUSTER - name of the cluster as in SLURM
 # RESOURCE - name of the resource as in XDMOD
 # PARTITIONS - list of partitions of the SLURM cluster to include in XDMOD resource
 # NMT - number of threads per core, divide number of cores by the number of hardware threads
-get_single_resource_data (){
+get_data (){
 	CLUSTER=$1
 	RESOURCE=$2
 	PARTITIONS=$3

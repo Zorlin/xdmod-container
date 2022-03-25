@@ -1,6 +1,6 @@
 # Build stage
 FROM    centos:7 AS builder
-LABEL   version="10.0.0" \
+LABEL   version="0.1.0" \
         description="Slurm collector for XDMoD" \
         maintainer="zorlin@gmail.com"
 

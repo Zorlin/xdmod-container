@@ -34,4 +34,4 @@ then
 fi
 }
 
-. /xdmod-ingest/ingest.cfg
+. /xdmod-ingest/collect.cfg

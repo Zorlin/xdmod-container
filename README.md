@@ -1,9 +1,9 @@
 # xdmod-container
-This repository contains files for building Docker and Singularity images for [Open XDMoD](https://open.xdmod.org/)
+This repository contains files for building Docker and Singularity images for [Open XDMoD](https://open.xdmod.org/).
 
 It ships with an unsecured MariaDB instance (default CentOS 7 configuration; no `root` password is set, the test database is not removed, and the anonymous user is not removed), as MariaDB is not exposed outside of the container.
 
-The container features a runloop that waits for files to appear in `/var/lib/XDMoD-ingest-queue/in`.  The file(s) are ingested into the database and will be moved to `/var/lib/XDMoD-ingest-queue/out` if successful or to `/var/lib/XDMoD-ingest-queue/error` if not.  Results of the operations are logged to `/var/log/xdmod/ingest-queue.log`.
+The `xdmod` container features a runloop that waits for files to appear in `/var/lib/XDMoD-ingest-queue/in`.  The file(s) are ingested into the database and will be moved to `/var/lib/XDMoD-ingest-queue/out` if successful or to `/var/lib/XDMoD-ingest-queue/error` if not.  Results of the operations are logged to `/var/log/xdmod/ingest-queue.log`.
 
 ## Custom ingest scripts
 Collection and ingest scripts have been provided.

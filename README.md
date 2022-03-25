@@ -1,14 +1,45 @@
 # xdmod-container
+This repository contains files for building Docker and Singularity images for [Open XDMoD](https://open.xdmod.org/)
 
-This repository includes container provisioning files to create a container that executes the XDMoD web application.  Both the MariaDB server and Apache httpd execute within the container, making the service completely self-contained.
-
-The MariaDB instance will retain the default CentOS 7 configuration; no `root` password is set, the test database is not removed, and the anonymous user is not removed.  Since all access is internal to the container, there's no need to secure it.
+It ships with an unsecured MariaDB instance (default CentOS 7 configuration; no `root` password is set, the test database is not removed, and the anonymous user is not removed), as MariaDB is not exposed outside of the container.
 
 The container features a runloop that waits for files to appear in `/var/lib/XDMoD-ingest-queue/in`.  The file(s) are ingested into the database and will be moved to `/var/lib/XDMoD-ingest-queue/out` if successful or to `/var/lib/XDMoD-ingest-queue/error` if not.  Results of the operations are logged to `/var/log/xdmod/ingest-queue.log`.
 
-## Docker
+## Custom ingest scripts
+Collection and ingest scripts have been provided.
 
-The Docker container should be spawned with TCP port 8080 mapped to a host port to expose the web application.  The database starts out uninitialized; when a container instance is spawned an external directory may be bind-mounted at `/var/lib/mysql` in the container to make the database persistent across restarts of the instance, and when the container entrypoint script is first executed the database setup will be completed automatically.
+To use them...
+
+Populate /xdmod-ingest/collect.cfg with steps for collecting data from your resources. For each resource, we run the function get_data.
+
+The first field is the name of the cluster. The second field is the name of the resource in XDMoD for the queues you are selecting. Third field is the queues. Finally, there is an optional fourth field for threads per CPU on systems where you have Hyperthreading or SMT enabled.
+
+```
+echo "Collecting zeus cpu data..."
+get_data zeus zeus-cpu "workq,debugq"
+echo "Collecting magnus data..."
+get_data magnus magnus "workq,debugq" 2
+echo "Collecting galaxy cpu data..."
+get_data galaxy galaxy-cpu "workq,longq" 2
+```
+
+Now, populate `/xdmod-ingest/ingest.cfg` with steps for ingesting the collected data.
+
+```
+# load zeus-cpu
+xdmod-shredder -r zeus-cpu -f slurm -i /xdmod-ingest/xdmod-zeus-cpu-*.log
+# load magnus
+xdmod-shredder -r magnus -f slurm -i /xdmod-ingest/xdmod-magnus-*.log
+# load galaxy-cpu
+xdmod-shredder -r galaxy-cpu -f slurm -i /xdmod-ingest/xdmod-galaxy-cpu-*.log
+```
+
+Mount a working Slurm configuration and MUNGE key inside slurm-collector as `/etc/slurm/slurm.conf` and `/etc/munge/munge.key` respectively.
+
+You can now run `slurm-main.sh` inside the *slurm-collector* container to gather data from your SLURM cluster(s), and `slurm-ingest.sh` inside the *xdmod* container to process and ingest the data. Finally, running `xdmod-ingestor` will do final processing and make it available to XDMoD.
+
+## Docker
+The Docker image listens on TCP port 80 by default. It has been modified with an expect script that automatically sets up basic settings for XDMoD, providing a working XDMoD installation out of the box.
 
 An external directory can also be bind-mounted at `/var/lib/XDMoD-ingest-queue`.  The directory must have the following subdirectories:
 
@@ -24,41 +55,40 @@ The container image is built in this repository directory using:
 
 ```
 $ cd Docker
-$ ROOT_PASSWORD="<password>" docker build --rm --tag local/xdmod:10.0.0 .
+$ ROOT_PASSWORD="<password>" docker build --rm --tag zorlin/xdmod:10.0.0 .
 ```
 
 The following example illustrates the creation of an instance with persistent database and ingest queue directories:
 
 ```
-$ mkdir -p /tmp/XDMoD-Caviness/ingest-queue
-$ mkdir -p /tmp/XDMoD-Caviness/database
+$ mkdir -p /opt/xdmod/ingest-queue
+$ mkdir -p /opt/xdmod/database
 $ docker run --detach --restart unless-stopped \
-    --name XDMoD-Caviness \
-    --env CLUSTER_NAME="cc3" \
+    --name xdmod \
+    --env CLUSTER_NAME="magnus" \
     --env RESOURCE_LOG_FORMAT="slurm" \
-    --volume "/tmp/XDMoD-Caviness/database:/var/lib/mysql:rw" \
-    --volume "/tmp/XDMoD-Caviness/ingest-queue:/var/lib/XDMoD-ingest-queue:rw" \
-    --publish 8080:8080
-    local/xdmod:10.0.0
+    --env EMAIL="example@protonmail.com" \
+    --volume "/opt/xdmod/database:/var/lib/mysql:rw" \
+    --volume "/opt/xdmod/ingest-queue:/var/lib/XDMoD-ingest-queue:rw" \
+    --publish 80:80
+    zorlin/xdmod:10.0.0
 ```
 
-The `CLUSTER_NAME` and `RESOURCE_LOG_FORMAT` are used in the entrypoint XDMoD-start script as arguments to `xdmod-shredder` for resource manager log file ingestion.  `RESOURCE_LOG_FORMAT` defaults to "slurm".  
+The `CLUSTER_NAME` and `RESOURCE_LOG_FORMAT` are used in the entrypoint XDMoD-start script as arguments to `xdmod-shredder` for resource manager log file ingestion. `RESOURCE_LOG_FORMAT` defaults to "slurm". `EMAIL` is used for XDMoD configuration and notices.
 
-Once the instance is online, XDMoD must be initialized and the ingest queue activated:
+Once the instance is online, the ingest queue can be optionally activated:
 
 ```
-$ docker exec -it XDMoD-Caviness /bin/bash -l
-[container]> xdmod-setup
-    :
+$ docker exec -it xdmod /bin/bash -l
 [container]> touch /var/lib/XDMoD-ingest-queue/enable
 [container]> exit
 ```
 
-At this point, copying files to `/tmp/XDMoD-Caviness/ingest-queue/in` will see them processed in the runloop.  Point a web browser to http://localhost:8080/ to use the web application.
+At this point, copying files to `/tmp/XDMoD-Caviness/ingest-queue/in` will see them processed in the runloop.  Point a web browser to http://localhost/ to use XDMoD.
 
 ## Singularity
 
-Singularity 3.0 or newer is required (3.2.1 was used in our production environment) for the network port mapping and support for instances (service-like containers).
+Singularity 3.0 or newer is required (3.2.1 was used in a previous production environment) for the network port mapping and support for instances (service-like containers).
 
 Rather than bind-mounting directories at specific paths as outline above for Docker, with Singularity a writable overlay file system is a good option.  Any changes to the file system relative to the read-only container image are written to an external directory.  As with Docker, port 8080 is mapped to a host port to expose the web application.
 
@@ -74,8 +104,8 @@ $ ROOT_PASSWORD="<password>" singularity build XDMoD-10.0.0.sif Singularity
 The following example illustrates the execution of an instance with an overlay file system:
 
 ```
-$ mkdir -p /tmp/XDMoD-Caviness
-$ singularity instance start --overlay /tmp/XDMoD-Caviness --net --dns 10.65.0.13 \
+$ mkdir -p /opt/xdmod
+$ singularity instance start --overlay /opt/xdmod --net --dns 10.65.0.13 \
     --network bridge --network-args "portmap=8080:8080/tcp" \
     --env CLUSTER_NAME="cc3" --env RESOURCE_LOG_FORMAT="slurm" \
     XDMoD-10.0.0.sif XDMoD-Caviness
@@ -127,5 +157,14 @@ $ cp systemd/xdmod-template.service /etc/systemd/system/xdmod@Farber.service
 $ systemctl daemon-reload
 $ systemctl enable xdmod@Farber.service
 $ systemctl start xdmod@Farber.service
+```
+
+## slurm-collector
+An additional Docker image has been provided called slurm-collector. The purpose of this image is to provide a container for directly collecting Slurm data.
+
+You can build it as follows:
+```
+$ cd slurm-collector
+$ docker build --rm --tag zorlin/slurm-collector:latest
 ```
 

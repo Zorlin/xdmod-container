@@ -65,10 +65,12 @@ RUN     mkdir --parents --mode=0755 /var/lib/XDMoD-ingest-queue/error
 # Command to execute when container is started:
 #
 COPY    --chown=0:0 XDMoD-start /usr/sbin/XDMoD-start
+COPY    --chown=0:0 my.cnf.d/xdmod-tuning.conf /etc/my.cnf.d/xdmod-tuning.conf
 COPY	--chown=0:0 xdmod.conf /etc/httpd/conf.d/xdmod.conf
 COPY	--chown=0:0 run-xdmod-setup /usr/bin/run-xdmod-setup
 COPY	--chown=0:0 slurm-ingest.sh /usr/bin/slurm-ingest.sh
 RUN     chmod 0755 /usr/sbin/XDMoD-start
+RUN     chmod 0644 /etc/my.cnf.d/xdmod-tuning.conf
 RUN     chmod 0755 /usr/bin/run-xdmod-setup
 RUN     chmod 0755 /usr/bin/slurm-ingest.sh
 CMD     /usr/sbin/XDMoD-start

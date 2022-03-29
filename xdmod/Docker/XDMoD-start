@@ -40,9 +40,9 @@ if [ -z "$EMAIL" ]; then
 fi
 
 # Automatically initialise XDMoD
-if [ ! -d /var/lib/mysql/moddb/ ]; then
-    /usr/bin/run-xdmod-setup $EMAIL
-fi
+#if [ ! -d /var/lib/mysql/moddb/ ]; then
+#    /usr/bin/run-xdmod-setup $EMAIL
+#fi
 
 # Ensure the ingest queue directories are okay:
 for subdir in in out error; do

@@ -4,7 +4,7 @@
 #
 # Build
 #
-#   $ docker build --rm --tag local/xdmod:10.0.0 .
+#   $ docker build --rm --tag local/xdmod:8.0.0 .
 #
 # Run
 #
@@ -14,11 +14,11 @@
 #     --env CLUSTER_NAME="<cluster_name_for_xdmod-shredder>" \
 #     --env RESOURCE_LOG_FORMAT="<resource_log_format_for_xdmod-shredder" \
 #     --publish 80:80 \
-#     local/xdmod:10.0.0
+#     local/xdmod:8.0.0
 #
 
 FROM    centos:7
-LABEL   version="10.0.0" \
+LABEL   version="8.0.0" \
         description="XDMoD bundle containing database and web server" \
         maintainer="zorlin@gmail.com"
 
@@ -47,7 +47,7 @@ RUN     yum -y install  mariadb-server mariadb
 #
 # Install XDMoD:
 #
-RUN     yum -y install https://github.com/ubccr/xdmod/releases/download/v10.0.0/xdmod-10.0.0-1.0.el7.noarch.rpm
+RUN     yum -y install https://github.com/ubccr/xdmod/releases/download/v8.0.0/xdmod-8.0.0-1.0.el7.noarch.rpm
 
 #
 # XDMoD uses an Apache virtual host on port 80:

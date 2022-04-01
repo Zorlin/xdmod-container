@@ -29,7 +29,8 @@ RUN     yum -y update && \
         yum -y install  epel-release && \
         yum -y install  sudo wget gmp-devel cronie logrotate \
                         coreutils shadow-utils tar xz bzip2 gzip zip jq \
-                        libreoffice chromium-headless librsvg2-tools expect
+                        libreoffice chromium-headless librsvg2-tools expect \
+                        which sendmail
 RUN     set -o pipefail && echo "root:${ROOT_PASSWORD}" | chpasswd
 
 #
